@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from sqlalchemy import Enum, ForeignKey, Numeric, String, UniqueConstraint
+from sqlalchemy import Enum, ForeignKey, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import AuditMixin, Base, UUIDPrimaryKeyMixin
@@ -14,11 +14,6 @@ class BudgetPeriod(StrEnum):
 
 class Budget(UUIDPrimaryKeyMixin, AuditMixin, Base):
     __tablename__ = "budgets"
-    __table_args__ = (
-        UniqueConstraint(
-            "user_id", "category", "period", name="uq_budget_user_category_period"
-        ),
-    )
 
     user_id: Mapped[str] = mapped_column(
         String(36),
