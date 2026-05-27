@@ -1,0 +1,1 @@
+Koin - A Finance Advisor App with AI Capabilities
