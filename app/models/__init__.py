@@ -7,6 +7,7 @@ from app.models.savings_goal import SavingsGoal
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.models.verification_code import VerificationCode
+from app.models.notification import Notification
 
 __all__ = [
     "Base",
@@ -19,4 +20,5 @@ __all__ = [
     "Transaction",
     "User",
     "VerificationCode",
+    "Notification",
 ]

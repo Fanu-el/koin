@@ -13,6 +13,7 @@ from app.core.exception_handlers import (
 )
 from app.db.session import SessionLocal, engine
 from app.models import Base
+from app.core.logging import configure_logging, logger
 from app.routes import (
     admin,
     auth,
@@ -22,6 +23,7 @@ from app.routes import (
     savings_goals,
     transactions,
     users,
+    notifications,
 )
 from app.schemas.response import ApiResponse, success_response
 from app.services.role_service import seed_default_roles, seed_default_super_admin
@@ -29,6 +31,8 @@ from app.services.role_service import seed_default_roles, seed_default_super_adm
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    configure_logging()
+    logger.info("Starting Koin API, creating tables and seeding roles if needed")
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as db:
         seed_default_roles(db)
@@ -52,6 +56,7 @@ app.include_router(transactions.router)
 app.include_router(budgets.router)
 app.include_router(savings_goals.router)
 app.include_router(finance.router)
+app.include_router(notifications.router)
 
 
 @app.get("/health", response_model=ApiResponse[dict[str, str]])

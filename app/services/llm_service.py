@@ -13,6 +13,7 @@ from fastapi import HTTPException, status
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.core.config import settings
+from app.core.logging import logger
 
 # ---------------------------------------------------------------------------
 # Supported providers
@@ -62,6 +63,7 @@ def get_llm_for_agent(model: str | None = None) -> BaseChatModel:
     """Return a configured LLM instance suitable for tool-calling agents."""
     model_str = _resolve_and_validate(model)
     provider, model_name = _parse_model_str(model_str)
+    logger.info("Creating LLM model", extra={"provider": provider, "model": model_name})
     return _get_llm_model(provider, model_name)
 
 

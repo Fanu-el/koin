@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
 from app.schemas.transaction import TransactionCreateRequest, TransactionUpdateRequest
+from app.services.finance_service import get_budget_status
+from app.services.notification_service import create_notification
 
 
 def list_user_transactions(
@@ -56,6 +58,24 @@ def create_transaction(
     db.add(txn)
     db.commit()
     db.refresh(txn)
+
+    # Check budgets and notify if thresholds exceeded (simple heuristic)
+    try:
+        # Only check for expense transactions
+        if txn.type == TransactionType.EXPENSE:
+            budgets = get_budget_status(db, user)
+            for item in budgets:
+                pct = getattr(item, "percent_used", 0)
+                if pct >= 80.0:
+                    title = f"Budget alert: {item.budget.category}"
+                    body = (
+                        f"You've used {pct}% of your {item.budget.category} budget ({item.spent:.2f}/{item.budget.amount_limit:.2f})."
+                    )
+                    create_notification(db, user, title=title, body=body, type="WARNING")
+                    # create one notification per budget; continue checking others
+    except Exception:
+        # Do not block transaction creation on notification errors
+        pass
     return txn
 
 

@@ -20,6 +20,7 @@ from langchain_core.tools import StructuredTool
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.core.logging import logger
 from app.models.chat import ChatMessageRole
 from app.services.finance_service import (
     agent_get_budget_status,
@@ -126,12 +127,22 @@ async def run_finance_agent(
     except HTTPException:
         raise
     except Exception as exc:
+        logger.exception("Finance agent invocation failed", exc_info=exc)
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="AI service failed",
         ) from exc
 
     latency_ms = int((perf_counter() - started_at) * 1000)
+    logger.info(
+        "Finance agent completed",
+        extra={
+            "user_id": user_id,
+            "model": model_str,
+            "latency_ms": latency_ms,
+            "history_len": len(history),
+        },
+    )
 
     # The last message in the result is the final AI response
     ai_messages = [m for m in result.get("messages", []) if isinstance(m, AIMessage)]
@@ -209,6 +220,7 @@ async def stream_finance_agent(
     except HTTPException:
         raise
     except Exception as exc:
+        logger.exception("Finance agent streaming failed", exc_info=exc)
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="AI service failed",
@@ -222,6 +234,15 @@ async def stream_finance_agent(
         )
 
     latency_ms = int((perf_counter() - started_at) * 1000)
+    logger.info(
+        "Finance agent stream finished",
+        extra={
+            "user_id": user_id,
+            "model": model_str,
+            "latency_ms": latency_ms,
+            "collected_len": len(collected),
+        },
+    )
     yield LLMStreamChunk(
         content=full_content,
         done=True,

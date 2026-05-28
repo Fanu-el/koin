@@ -42,3 +42,4 @@ class User(UUIDPrimaryKeyMixin, AuditMixin, Base):
     transactions = relationship("Transaction", back_populates="user")
     budgets = relationship("Budget", back_populates="user")
     savings_goals = relationship("SavingsGoal", back_populates="user")
+    notifications = relationship("Notification", back_populates="user")
