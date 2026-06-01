@@ -11,7 +11,6 @@ venv/
 env/
 
 # Environment variables
-.env
 
 # Database
 *.db
@@ -30,7 +29,6 @@ build/
 htmlcov/
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -44,3 +42,9 @@ Thumbs.db
 
 # Reference project (not part of this repo)
 from/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
+config.bat
+node_modules

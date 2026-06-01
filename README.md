@@ -1,1 +1,1 @@
-Koin - A Finance Advisor App with AI Capabilities
+A FastAPI and LangChain Finance Assistant/Advisor Backend with AI Chats
